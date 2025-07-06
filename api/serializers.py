@@ -10,6 +10,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
+        # Removed 'username' from the fields tuple as email is the primary identifier
         fields = ('first_name', 'last_name', 'email', 'phone', 'dob', 'password', 'password2')
         extra_kwargs = {
             'first_name': {'required': True},
