@@ -13,7 +13,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         fields = ('first_name', 'last_name', 'email', 'phone', 'dob', 'password', 'password2')
         extra_kwargs = {
             'first_name': {'required': True},
-            'last_name': {'required': True}
+            'last_name': {'required': True},
+            # dob is optional by default for DateField with allow_null=True/required=False
+            # but we need to handle its absence in the create method
         }
 
     def validate(self, attrs):
@@ -22,12 +24,15 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
+        # Safely get 'dob' from validated_data, will be None if not provided
+        dob = validated_data.get('dob')
+
         user = User.objects.create_user(
             email=validated_data['email'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
             phone=validated_data['phone'],
-            dob=validated_data['dob'],
+            dob=dob, # Use the safely retrieved dob value
             password=validated_data['password']
         )
         return user
